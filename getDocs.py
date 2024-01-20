@@ -60,7 +60,15 @@ class DBclient:
                     to_append['second_last_hash'] = second_last_hash
                     to_append['last_hash'] = last_hash
                     to_append['url'] = document['url']
-                    hash_pairs.append(to_append)
+                    # skip hashes that are equal to dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f
+                    bad_hashes = [
+                        "dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f",
+                        "9e17cb15dd75bbbd5dbb984eda674863c3b10ab72613cf8a39a00c3e11a8492a"
+                    ]
+                    if second_last_hash not in bad_hashes and last_hash not in bad_hashes:
+                        hash_pairs.append(to_append)
+                    else:
+                        skipped += 1
 
             req_count = req_count - 1
 
@@ -175,8 +183,8 @@ def main():
     hash_filename = Path("logs") / "hash_pairs.json"
     directory_name = "documents3"
 
-    """ client.getHashPairs(hash_pairs_n=num_of_hash_pairs_to_get, sleepInterval=sleepInterval, batch_size=batch_size,
-        filename=hash_filename, docs_from=docs_from, docs_to=docs_to) """
+    client.getHashPairs(hash_pairs_n=num_of_hash_pairs_to_get, sleepInterval=sleepInterval, batch_size=batch_size,
+        filename=hash_filename, docs_from=docs_from, docs_to=docs_to)
     client.getDocs(directory_name, hash_filename)
 
 

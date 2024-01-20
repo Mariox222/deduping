@@ -229,22 +229,33 @@ class MinHash:
         return self._k_shingles(self.texts)
 
     @staticmethod
-    def logRealJaccard(shingle_sets, html_content_dict, logPath=None):
+    def realJaccard(shingle_sets, html_content_dict):
         """ Logs the real jaccard values for each text pair.
 
         Args:
             shingle_sets (list): List of shingle sets for each text.
             labels (list): List of text labels.
-            logPath (str): Path to log file.
 
         """
-        if logPath:
-            with open(logPath, "w") as file:
-                for i, list_i in enumerate(shingle_sets):
-                    set_i = set(list_i)
-                    for j, list_j in enumerate(shingle_sets[i:]):
-                        set_j = set(list_j)
-                        real_jaccard = len(set_i.intersection(set_j)) / len(set_i.union(set_j))
-                        labels = list(html_content_dict.keys())
-                        file.write(f"{labels[i]} - {real_jaccard} - {labels[i + j]}\n")
+        r = []
+    
+        for i, list_i in enumerate(shingle_sets):
+            set_i = set(list_i)
+            for j, list_j in enumerate(shingle_sets[i:]):
+                set_j = set(list_j)
+                real_jaccard = len(set_i.intersection(set_j)) / len(set_i.union(set_j))
+                labels = list(html_content_dict.keys())
+                l1 = labels[i]
+                l2 = labels[j + i]
+                
+                d = {
+                    "name1": l1,
+                    "name2": l2,
+                    "real_jaccard": real_jaccard
+                }
+                if l1 != l2:
+                    r.append(d)
+        
+        return r
+                        
         

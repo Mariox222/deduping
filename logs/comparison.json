@@ -1,0 +1,422 @@
+[
+    {
+        "label1": "0_new",
+        "label2": "16_new",
+        "real": 0.45153473344103395,
+        "estimate": 0.18,
+        "difference": 0.27153473344103396
+    },
+    {
+        "label1": "0_old",
+        "label2": "19_old",
+        "real": 0.8654708520179372,
+        "estimate": 0.74,
+        "difference": 0.12547085201793717
+    },
+    {
+        "label1": "0_old",
+        "label2": "19_new",
+        "real": 0.6055776892430279,
+        "estimate": 0.4,
+        "difference": 0.20557768924302788
+    },
+    {
+        "label1": "10_new",
+        "label2": "10_old",
+        "real": 0.7017208413001912,
+        "estimate": 0.58,
+        "difference": 0.12172084130019123
+    },
+    {
+        "label1": "10_old",
+        "label2": "10_new",
+        "real": 0.7017208413001912,
+        "estimate": 0.58,
+        "difference": 0.12172084130019123
+    },
+    {
+        "label1": "13_new",
+        "label2": "9_new",
+        "real": 0.023762929829466033,
+        "estimate": 0.02,
+        "difference": 0.0037629298294660322
+    },
+    {
+        "label1": "14_new",
+        "label2": "14_old",
+        "real": 0.9985589912939057,
+        "estimate": 1.0,
+        "difference": 0.0014410087060943155
+    },
+    {
+        "label1": "14_old",
+        "label2": "14_new",
+        "real": 0.9985589912939057,
+        "estimate": 1.0,
+        "difference": 0.0014410087060943155
+    },
+    {
+        "label1": "16_new",
+        "label2": "0_new",
+        "real": 0.45153473344103395,
+        "estimate": 0.18,
+        "difference": 0.27153473344103396
+    },
+    {
+        "label1": "18_new",
+        "label2": "27_new",
+        "real": 0.34886136043320226,
+        "estimate": 0.14,
+        "difference": 0.20886136043320225
+    },
+    {
+        "label1": "18_new",
+        "label2": "27_old",
+        "real": 0.34745011086474503,
+        "estimate": 0.14,
+        "difference": 0.20745011086474502
+    },
+    {
+        "label1": "18_old",
+        "label2": "20_old",
+        "real": 0.11934591321960746,
+        "estimate": 0.02,
+        "difference": 0.09934591321960745
+    },
+    {
+        "label1": "19_new",
+        "label2": "0_old",
+        "real": 0.6055776892430279,
+        "estimate": 0.4,
+        "difference": 0.20557768924302788
+    },
+    {
+        "label1": "19_new",
+        "label2": "19_old",
+        "real": 0.7088607594936709,
+        "estimate": 0.54,
+        "difference": 0.16886075949367085
+    },
+    {
+        "label1": "19_old",
+        "label2": "0_old",
+        "real": 0.8654708520179372,
+        "estimate": 0.74,
+        "difference": 0.12547085201793717
+    },
+    {
+        "label1": "19_old",
+        "label2": "19_new",
+        "real": 0.7088607594936709,
+        "estimate": 0.54,
+        "difference": 0.16886075949367085
+    },
+    {
+        "label1": "1_new",
+        "label2": "1_old",
+        "real": 0.7009907026367932,
+        "estimate": 0.4,
+        "difference": 0.3009907026367932
+    },
+    {
+        "label1": "1_old",
+        "label2": "1_new",
+        "real": 0.7009907026367932,
+        "estimate": 0.4,
+        "difference": 0.3009907026367932
+    },
+    {
+        "label1": "20_old",
+        "label2": "18_old",
+        "real": 0.11934591321960746,
+        "estimate": 0.02,
+        "difference": 0.09934591321960745
+    },
+    {
+        "label1": "21_new",
+        "label2": "21_old",
+        "real": 0.984092155787164,
+        "estimate": 0.96,
+        "difference": 0.02409215578716406
+    },
+    {
+        "label1": "21_old",
+        "label2": "21_new",
+        "real": 0.984092155787164,
+        "estimate": 0.96,
+        "difference": 0.02409215578716406
+    },
+    {
+        "label1": "22_new",
+        "label2": "22_old",
+        "real": 0.9991774692373495,
+        "estimate": 1.0,
+        "difference": 0.0008225307626504863
+    },
+    {
+        "label1": "22_old",
+        "label2": "22_new",
+        "real": 0.9991774692373495,
+        "estimate": 1.0,
+        "difference": 0.0008225307626504863
+    },
+    {
+        "label1": "23_new",
+        "label2": "23_old",
+        "real": 0.9026013095027429,
+        "estimate": 0.76,
+        "difference": 0.14260130950274286
+    },
+    {
+        "label1": "23_old",
+        "label2": "23_new",
+        "real": 0.9026013095027429,
+        "estimate": 0.76,
+        "difference": 0.14260130950274286
+    },
+    {
+        "label1": "23_old",
+        "label2": "26_new",
+        "real": 0.08357716938477706,
+        "estimate": 0.02,
+        "difference": 0.06357716938477706
+    },
+    {
+        "label1": "23_old",
+        "label2": "26_old",
+        "real": 0.08357716938477706,
+        "estimate": 0.02,
+        "difference": 0.06357716938477706
+    },
+    {
+        "label1": "24_new",
+        "label2": "24_old",
+        "real": 0.8445789338140612,
+        "estimate": 0.82,
+        "difference": 0.024578933814061288
+    },
+    {
+        "label1": "24_new",
+        "label2": "7_new",
+        "real": 0.01928605654048874,
+        "estimate": 0.02,
+        "difference": 0.0007139434595112605
+    },
+    {
+        "label1": "24_new",
+        "label2": "7_old",
+        "real": 0.01928605654048874,
+        "estimate": 0.02,
+        "difference": 0.0007139434595112605
+    },
+    {
+        "label1": "24_old",
+        "label2": "24_new",
+        "real": 0.8445789338140612,
+        "estimate": 0.82,
+        "difference": 0.024578933814061288
+    },
+    {
+        "label1": "24_old",
+        "label2": "7_new",
+        "real": 0.019275399690562144,
+        "estimate": 0.02,
+        "difference": 0.0007246003094378561
+    },
+    {
+        "label1": "24_old",
+        "label2": "7_old",
+        "real": 0.019275399690562144,
+        "estimate": 0.02,
+        "difference": 0.0007246003094378561
+    },
+    {
+        "label1": "25_new",
+        "label2": "25_old",
+        "real": 0.961842652976273,
+        "estimate": 0.92,
+        "difference": 0.04184265297627299
+    },
+    {
+        "label1": "25_old",
+        "label2": "25_new",
+        "real": 0.961842652976273,
+        "estimate": 0.92,
+        "difference": 0.04184265297627299
+    },
+    {
+        "label1": "26_new",
+        "label2": "26_old",
+        "real": 0.999948630576793,
+        "estimate": 1.0,
+        "difference": 5.136942320704829e-05
+    },
+    {
+        "label1": "26_new",
+        "label2": "23_old",
+        "real": 0.08357716938477706,
+        "estimate": 0.02,
+        "difference": 0.06357716938477706
+    },
+    {
+        "label1": "26_old",
+        "label2": "26_new",
+        "real": 0.999948630576793,
+        "estimate": 1.0,
+        "difference": 5.136942320704829e-05
+    },
+    {
+        "label1": "26_old",
+        "label2": "23_old",
+        "real": 0.08357716938477706,
+        "estimate": 0.02,
+        "difference": 0.06357716938477706
+    },
+    {
+        "label1": "27_new",
+        "label2": "27_old",
+        "real": 0.94390531357356,
+        "estimate": 0.88,
+        "difference": 0.06390531357356
+    },
+    {
+        "label1": "27_new",
+        "label2": "18_new",
+        "real": 0.34886136043320226,
+        "estimate": 0.14,
+        "difference": 0.20886136043320225
+    },
+    {
+        "label1": "27_old",
+        "label2": "27_new",
+        "real": 0.94390531357356,
+        "estimate": 0.88,
+        "difference": 0.06390531357356
+    },
+    {
+        "label1": "27_old",
+        "label2": "18_new",
+        "real": 0.34745011086474503,
+        "estimate": 0.14,
+        "difference": 0.20745011086474502
+    },
+    {
+        "label1": "28_new",
+        "label2": "28_old",
+        "real": 0.6789951151430565,
+        "estimate": 0.44,
+        "difference": 0.23899511514305655
+    },
+    {
+        "label1": "28_old",
+        "label2": "28_new",
+        "real": 0.6789951151430565,
+        "estimate": 0.44,
+        "difference": 0.23899511514305655
+    },
+    {
+        "label1": "29_new",
+        "label2": "29_old",
+        "real": 0.7010247136829415,
+        "estimate": 0.5,
+        "difference": 0.2010247136829415
+    },
+    {
+        "label1": "29_old",
+        "label2": "29_new",
+        "real": 0.7010247136829415,
+        "estimate": 0.5,
+        "difference": 0.2010247136829415
+    },
+    {
+        "label1": "2_new",
+        "label2": "2_old",
+        "real": 0.9709917679341434,
+        "estimate": 0.94,
+        "difference": 0.030991767934143488
+    },
+    {
+        "label1": "2_old",
+        "label2": "2_new",
+        "real": 0.9709917679341434,
+        "estimate": 0.94,
+        "difference": 0.030991767934143488
+    },
+    {
+        "label1": "30_new",
+        "label2": "30_old",
+        "real": 0.9995685341764441,
+        "estimate": 1.0,
+        "difference": 0.0004314658235559099
+    },
+    {
+        "label1": "30_old",
+        "label2": "30_new",
+        "real": 0.9995685341764441,
+        "estimate": 1.0,
+        "difference": 0.0004314658235559099
+    },
+    {
+        "label1": "3_new",
+        "label2": "3_old",
+        "real": 0.6434922666195971,
+        "estimate": 0.3,
+        "difference": 0.34349226661959714
+    },
+    {
+        "label1": "3_old",
+        "label2": "3_new",
+        "real": 0.6434922666195971,
+        "estimate": 0.3,
+        "difference": 0.34349226661959714
+    },
+    {
+        "label1": "7_new",
+        "label2": "7_old",
+        "real": 0.9869000322130356,
+        "estimate": 0.96,
+        "difference": 0.026900032213035607
+    },
+    {
+        "label1": "7_new",
+        "label2": "24_new",
+        "real": 0.01928605654048874,
+        "estimate": 0.02,
+        "difference": 0.0007139434595112605
+    },
+    {
+        "label1": "7_new",
+        "label2": "24_old",
+        "real": 0.019275399690562144,
+        "estimate": 0.02,
+        "difference": 0.0007246003094378561
+    },
+    {
+        "label1": "7_old",
+        "label2": "7_new",
+        "real": 0.9869000322130356,
+        "estimate": 0.96,
+        "difference": 0.026900032213035607
+    },
+    {
+        "label1": "7_old",
+        "label2": "24_new",
+        "real": 0.01928605654048874,
+        "estimate": 0.02,
+        "difference": 0.0007139434595112605
+    },
+    {
+        "label1": "7_old",
+        "label2": "24_old",
+        "real": 0.019275399690562144,
+        "estimate": 0.02,
+        "difference": 0.0007246003094378561
+    },
+    {
+        "label1": "9_new",
+        "label2": "13_new",
+        "real": 0.023762929829466033,
+        "estimate": 0.02,
+        "difference": 0.0037629298294660322
+    }
+]

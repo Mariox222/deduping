@@ -10,6 +10,10 @@ def main():
             for file in doc.iterdir():
                 file.unlink()
             doc.rmdir()
+        
+        # remove only files
+        else:
+            doc.unlink()
 
     
     print("docs cleared.")

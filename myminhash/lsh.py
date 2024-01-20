@@ -28,6 +28,7 @@ class LSH:
         self._buckets = defaultdict(list)
         self._i_bucket = defaultdict(list)
         self.permutations = None
+        self.estimates = []
 
         # Run methods if minhash and labels provided
         if minhash and labels:
@@ -91,9 +92,12 @@ class LSH:
         
         # Log the candidates
         if logPath:
-            with open(logPath, 'a') as file:
-                candidates_str = str([f"{key} ({candidates[key]/self.no_of_bands})" for key in candidates])
-                file.write(f"{datetime.datetime.now()}, for {label} ,- {candidates_str}\n")
+            for key in candidates:
+                self.estimates.append({
+                    "label1": label,
+                    "label2": key,
+                    "estimate": candidates[key] / self.no_of_bands,
+                })
         
         # Apply Jaccard threshold and unzip pairs.
         if jaccard:
@@ -216,6 +220,7 @@ class LSH:
             raise ValueError(
                 'Sensitivity must be <= no of bands.'
             )
+        self.estimates = []
         adjacency_list = {}
         for label in self._i_bucket.keys():
             buckets = self._i_bucket.get(label)
@@ -223,4 +228,8 @@ class LSH:
                 buckets, label, sensitivity, min_jaccard, logPath=logPath
             )
             adjacency_list[label] = candidates
+        
+        if logPath:
+            return adjacency_list, self.estimates
+
         return adjacency_list
