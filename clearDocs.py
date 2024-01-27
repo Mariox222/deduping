@@ -3,7 +3,7 @@ from pathlib import Path
 def main():
     print("Clearing docs...")
 
-    docs = Path("documents3")
+    docs = Path("documents")
     for doc in docs.iterdir():
         # remove only directories
         if doc.is_dir():

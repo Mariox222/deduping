@@ -82,12 +82,18 @@ def realVsEstimateCompare(comparisonLogPath, realJaccardLogPath=None, lshLogPath
         with open(comparisonLogPath, "w") as file:
             json.dump(r, file, indent=4)
         
-        print(f"Average difference: {sum([x['difference'] for x in r]) / len(r)}")
+        print(f"Average difference: {sum([x['difference'] for x in r]) / len(r)} in {len(r)} comparisons")
 
         return
 
 
 def main():
+    print("Log real Jaccard? (y/n) default yes")
+    logRealJaccardInput = input()
+    if logRealJaccardInput.lower() == "y" or logRealJaccardInput == "":
+        logRealJaccardInput = True
+    else:
+        logRealJaccardInput = False
 
     lshLogPath = Path("logs") / "lshLogs.json"
     # lshLogPath = None
@@ -97,7 +103,7 @@ def main():
     # adjacencyListLogPath = None
     comparisonLogPath = Path("logs") / "comparison.json"
     # comparisonLogPath = None
-    folder_path = "documents3"
+    folder_path = "documents"
     min_jaccard = 0.8
 
     print("Start")
@@ -105,18 +111,25 @@ def main():
     
     # Get the html content of the documents
     html_content_dict = get_html_content_dict(folder_path)
+    print("[{:.2f}s] got html content".format(time.time() - start_time))
 
     # Generate MinHash signatures.
     shingle_sets, minhash, lsh = generateSignatures(html_content_dict)
+    print("[{:.2f}s] generated signatures".format(time.time() - start_time))
 
-    # log real jaccard
-    logRealJaccard(realJaccardLogPath, shingle_sets, html_content_dict)
+    if logRealJaccardInput:
+        # log real jaccard
+        logRealJaccard(realJaccardLogPath, shingle_sets, html_content_dict)
+        print("[{:.2f}s] logged real jaccard".format(time.time() - start_time))
 
     # save the adjacency list in json
     logAdjacencyList(adjacencyListLogPath, lsh, lshLogPath, min_jaccard)
+    print("[{:.2f}s] logged adjacency list".format(time.time() - start_time))
 
-    # compare real jaccard and estimate jaccard
-    realVsEstimateCompare(comparisonLogPath, realJaccardLogPath, lshLogPath)
+    if logRealJaccardInput:
+        # compare real jaccard and estimate jaccard
+        realVsEstimateCompare(comparisonLogPath, realJaccardLogPath, lshLogPath)
+        print("[{:.2f}s] compared real jaccard and estimate jaccard".format(time.time() - start_time))
 
     end_time = time.time()
     print(f"Done in: {end_time - start_time} seconds")

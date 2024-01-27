@@ -11,183 +11,180 @@ class DBclient:
     def __init__(self, conn_str):
         self.conn_str = conn_str
         self.connect()
+        self.url_count = 3200000 # hardkodirano jer dinamičko određivanje predugo traje
+        self.bad_hashes = [
+            "dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f",
+            "9e17cb15dd75bbbd5dbb984eda674863c3b10ab72613cf8a39a00c3e11a8492a",
+            "368daab67b1a5b2b2802edbbac79a2aa4ba992a2ebf9c67b98ad784d8004018c"
+        ]
+        self.bad_url_endings = [
+            ".json",
+            ".xml",
+            ".js",
+            ".css",
+            "wp-json/",
+        ]
+        self.to_sleep = 1
     
     def connect(self):
         self.client = pymongo.MongoClient(self.conn_str)
         self.db = self.client.websecradar
         print("connected")
-    
-    def getHashPairs(self, hash_pairs_n=10, sleepInterval=5, batch_size=10,
-     filename='hash_pairs.json', docs_from=0, docs_to=None):
-        print("getting pairs")
+
+    def getRandomHashes(self, number_of_hashes=100, filename='random_hashes.json'):
+        print("getting random hashes")
         url_col = self.db.crawled_data_urls_v0
 
-        hash_pairs = []
-        skipped = 0
-        total_document_count = 0
-        req_count = batch_size
+        url_hash = []
+        added_urls = []
+        while len(url_hash) < number_of_hashes:
+            print(f"got {len(url_hash)} hashes, sleeping")
+            time.sleep(self.to_sleep)
 
-        count = 1956352 # hardkodirano jer dinamičko određivanje predugo traje
-        print("document count is: {}".format(count))
-
-        assert (count >= docs_from)
-        if docs_to:
-            assert (count >= docs_to)
-        else:
-            docs_to = count
-        
-        for document in url_col.find(batch_size=batch_size)[docs_from:docs_to]:
-            
-            total_document_count += 1
-
-            to_append = dict()
-
-            last_hash = ""
-            second_last_hash = ""
-            for check in reversed(document['checks']):
-                if check['timestamp'] == document['last_check']:
-                    last_hash = check['hash']
-                if check['hash'] != last_hash and last_hash != "" and check['hash'] != None:
-                    second_last_hash = check['hash']
-                    break
-            
-            if (second_last_hash == ""):
-                skipped += 1
-            else:
-                if last_hash == None:
-                    print("one site's last check doesn't have a hash")
-                else:
-                    to_append['second_last_hash'] = second_last_hash
-                    to_append['last_hash'] = last_hash
-                    to_append['url'] = document['url']
-                    # skip hashes that are equal to dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f
-                    bad_hashes = [
-                        "dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f",
-                        "9e17cb15dd75bbbd5dbb984eda674863c3b10ab72613cf8a39a00c3e11a8492a"
-                    ]
-                    if second_last_hash not in bad_hashes and last_hash not in bad_hashes:
-                        hash_pairs.append(to_append)
-                    else:
-                        skipped += 1
-
-            req_count = req_count - 1
-
-            if req_count <= 0:
-                req_count = batch_size
-                if hash_pairs_n:
-                    if len(hash_pairs) >= hash_pairs_n:
+            for document in url_col.aggregate([{"$sample": {"size": 50}}]):
+                continue_flag = False
+                url = document['url']
+                for ending in self.bad_url_endings:
+                    if url.endswith(ending):
+                        continue_flag = True
                         break
+                if url in added_urls:
+                    continue_flag = True
                     
-                print (" --- skipped {} documents".format(skipped))
-                print ("hash_pairs: {}".format(len(hash_pairs)))
-                print ("total documents viewed: " + str(total_document_count))
-                print("sleep {} seconds\n".format(sleepInterval))
-                time.sleep(sleepInterval)
+                if continue_flag:
+                    continue
+                added_urls.append(url)
 
-                skipped = 0
-                continue
-        
-        print("Got {} hash pairs".format(len(hash_pairs)))
-        print ("writing hash pairs to '{}'".format(filename))
-        pprint (hash_pairs)
-
-        old_pairs = list()
-        if os.path.isfile(filename):
-            with open(filename, 'r')as f:
-                old_pairs = json.loads(f.read())
+                last_hash = ""
+                for check in reversed(document['checks']):
+                    if check['timestamp'] == document['last_check']:
+                        last_hash = check['hash']
+                        break
                 
-        for pair in old_pairs:
-            if pair not in hash_pairs:
-                hash_pairs.append(pair)
+                if (last_hash == ""):
+                    continue
+                elif last_hash in self.bad_hashes:
+                    continue
+                else:
+                    url_hash.append({'url': url, 'hash': last_hash})
 
-        written = 0
+        print("Got {} hashes".format(len(url_hash)))
+        print ("writing url-hash pairs to '{}'".format(filename))
+
         with open(filename, 'w') as f:
-            json.dump(hash_pairs, f)
+            json.dump(url_hash, f)
             print(" --- writing complete")
-            written = 1
         
-        if not written:
-            print("write failed")
+        return url_hash
+ 
+    def getRandomDocs(self, hash_filename, write_to_dir, result_log_filename, start_doc_name=0):
+        print("getting random docs")
 
-    def getDocs(self, directory_name, hash_filename):
-        print("getting docs")
         doc_col = self.db.crawled_data_pages_v0
 
-        extra_backSlash = "/" if directory_name[-1] != "/" else ""
-        directory = Path("./" + directory_name + extra_backSlash)
-
-        if not directory.exists():
-            raise "directory doesn't exist"
+        # check if directory exists
+        if not os.path.isdir(write_to_dir):
+            raise FilenotFoundError("Directory '{}' doesn't exist".format(write_to_dir))
         
-
-        count = 0
-        stats = dict()
-        with open(hash_filename, "r") as h:
-            data_str = h.read()
+        # check if hash_filename exists
+        if not os.path.isfile(hash_filename):
+            raise FilenotFoundError("File '{}' doesn't exist".format(hash_filename))
+        
+        
+        filename_url = []
+        with open(hash_filename, "r") as f:
+            data_str = f.read()
             data = json.loads(data_str)
-            for pair in data:
-                print (" --- " + str(count) + " / " + str(len(data)))
-                
-                print("sleeping 1 sec")
-                time.sleep(1)
 
-                old_doc_doc = doc_col.find_one({"hash": pair['second_last_hash']})
-                new_doc_doc = doc_col.find_one({"hash": pair['last_hash']})
-                
-                if not old_doc_doc or not new_doc_doc:
-                    print("couldn't get documents")
-                    count += 1
-                    continue
-                
-                old_doc = old_doc_doc['page']
-                new_doc = new_doc_doc['page']
-
-                
-
-                old_doc_path = Path("documents3") / (str(count) + "_old.html")
-                with old_doc_path.open(mode="w", encoding="utf-8") as f:
-                    f.write(old_doc)
-                    print("old document written")
-                
-                new_doc_path = Path("documents3") / (str(count) + "_new.html")
-                with new_doc_path.open(mode="w", encoding="utf-8") as f:
-                    f.write(new_doc)
-                    print("new document written")
-
-                pair['name_of_download'] = str(count)
-                stats[str(count)] = pair
-
+            count = start_doc_name - 1
+            for hash_url in data:
                 count += 1
-            
-        stats_path = Path("logs") / "docName_url.json"
-        with stats_path.open(mode="w", encoding="utf-8") as f:
-            json.dump(stats, f)
-            print("stats written")
-    
+                print("sleeping")
+                time.sleep(self.to_sleep)
+                doc_doc = doc_col.find_one({"hash": hash_url['hash']})
+                if not doc_doc:
+                    print("couldn't get document")
+                    continue
+                doc = doc_doc['page']
+
+                filename_without_dir = (str(count) + ".html")
+                doc_path = Path(write_to_dir) / filename_without_dir
+                with doc_path.open(mode="w", encoding="utf-8") as f:
+                    f.write(doc)
+                    filename_url.append({
+                        "filename": filename_without_dir,
+                        "url": hash_url['url']
+                    })
+                    print(f"document written {doc_path}")
         
+        existing_result_log = []
+        try:
+            with open(result_log_filename, "r") as f:
+                existing_result_log = json.load(f)
+        except FileNotFoundError:
+            print("result log not found, creating new one")
 
+        for entry in filename_url:
+            if entry not in existing_result_log:
+                existing_result_log.append(entry)
+        
+        with open(result_log_filename, "w") as f:
+            json.dump(existing_result_log, f)
+            print("result log written")
+        
+def getNrandomHashes(N=100):
+    config = load_dotenv('.env')
+    conn_string = os.getenv('DB_CONNECTION_STRING')
+    
+    client = DBclient(conn_string)
 
-def main():
+    num_of_hashes = N
+    filename = Path("logs") / "random_hashes.json"
+    client.getRandomHashes(num_of_hashes, filename)
 
+def getRandomDocs(hash_filename, write_to_dir, result_log_filename, start_doc_name=0):
     config = load_dotenv('.env')
     conn_string = os.getenv('DB_CONNECTION_STRING')
 
     client = DBclient(conn_string)
 
-    batch_size = 10
-    sleepInterval = 3
-    num_of_hash_pairs_to_get = None # ako je None, broj dokumenata je jednak docs_to - docs_from
-    docs_from = 0 # od koje pozicije pocinje dohvacati linkove
-    docs_to = 200 # do koje pozicije pocinje dohvacati, ako je None, trazi se do kraja kolekcije
+    client.getRandomDocs(hash_filename, write_to_dir, result_log_filename, start_doc_name=start_doc_name)
 
-    hash_filename = Path("logs") / "hash_pairs.json"
-    directory_name = "documents3"
+def main():
+    # measure time
+    start_time = time.time()
 
-    client.getHashPairs(hash_pairs_n=num_of_hash_pairs_to_get, sleepInterval=sleepInterval, batch_size=batch_size,
-        filename=hash_filename, docs_from=docs_from, docs_to=docs_to)
-    client.getDocs(directory_name, hash_filename)
+    default_documents_dir = Path("documents")
+    default_hash_filename = Path("logs") / "random_hashes.json"
+    default_getdoc_result_log_filename = Path("logs") / "filename_url.json"
 
+    print(f"defualt documents dir: {default_documents_dir}")
+    print(f"default hash filename: {default_hash_filename}")
+    print(f"default getdoc result log filename: {default_getdoc_result_log_filename}")
 
+    print("[{:.2f}] Get hashes? (y/n)".format(time.time() - start_time))
+    get_hashes = input()
+    if get_hashes.lower() == 'y':
+        print("How many hashes? > ")
+        N = int(input())
+        
+        getNrandomHashes(N=N)
+    
+    print("[{:.2f}] Get docs? (y/n)".format(time.time() - start_time))
+    get_docs = input()
+    if get_docs.lower() == 'y':
+        print("start document name? (blank for 0) > ")
+        start = input()
+        if start == '':
+            start = 0
+        else:
+            start = int(start)
+        getRandomDocs(default_hash_filename, default_documents_dir, 
+        default_getdoc_result_log_filename, start_doc_name=start)
+    else:
+        print("Exiting")
+    
+    print("Time elapsed: {:.2f} seconds".format(time.time() - start_time))
 
 if __name__ == "__main__":
     main()
