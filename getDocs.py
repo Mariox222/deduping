@@ -15,7 +15,11 @@ class DBclient:
         self.bad_hashes = [
             "dc1d54dab6ec8c00f70137927504e4f222c8395f10760b6beecfcfa94e08249f",
             "9e17cb15dd75bbbd5dbb984eda674863c3b10ab72613cf8a39a00c3e11a8492a",
-            "368daab67b1a5b2b2802edbbac79a2aa4ba992a2ebf9c67b98ad784d8004018c"
+            "368daab67b1a5b2b2802edbbac79a2aa4ba992a2ebf9c67b98ad784d8004018c",
+            "622bde5d9ebba9fe02bfce13c32e5b2f60e281996f61d8d68bee9de28e156555",
+            "7341eb3081bb2056eac9c793f7d0e58ff496d39a9210b7d753ae6621663a7608",
+            "44fe477964cfcaf5a9d2d48ec699c0d1beb862a77a113fe85f0479822e0ee04e",
+            "80c3fe2ae1062abf56456f52518bd670f9ec3917b7f85e152b347ac6b6faf880"
         ]
         self.bad_url_endings = [
             ".json",
@@ -23,6 +27,7 @@ class DBclient:
             ".js",
             ".css",
             "wp-json/",
+            "1.0/embed"
         ]
         self.to_sleep = 1
     
@@ -106,6 +111,10 @@ class DBclient:
                     print("couldn't get document")
                     continue
                 doc = doc_doc['page']
+
+                if len(doc) < 15:
+                    print("document too short")
+                    continue
 
                 filename_without_dir = (str(count) + ".html")
                 doc_path = Path(write_to_dir) / filename_without_dir

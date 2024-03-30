@@ -4,6 +4,7 @@ from pprint import pprint
 from pathlib import Path
 import time
 import json
+import psutil
 
 def logRealJaccard(realJaccardLogPath, shingle_sets, html_content_dict):
     # log the real jaccard
@@ -116,6 +117,22 @@ def main():
     # Generate MinHash signatures.
     shingle_sets, minhash, lsh = generateSignatures(html_content_dict)
     print("[{:.2f}s] generated signatures".format(time.time() - start_time))
+
+    print(f"minhash memory size in gigabytes: {minhash.signatures.nbytes / 1024 / 1024 / 1024}")
+    print(f"minhash number of elements: {minhash.signatures.size}")
+    size_per_signature = minhash.signatures.nbytes / minhash.signatures.size * 100 # *100 because there's 100 permutations
+    size_per_2M_docs = 2000000 * size_per_signature
+
+    # convert from bytes to GB
+    size_per_2M_docs = size_per_2M_docs / 1024 / 1024 / 1024
+
+    print(f"minhash size per signature in bytes: {size_per_signature}")
+    print(f"minhash size for 2M docs in GB: {size_per_2M_docs}")
+    
+    pid = os.getpid()
+    p = psutil.Process(pid)
+    memoryUse = p.memory_info().rss / 1024 / 1024
+    print(f"Memory usage: {memoryUse} MB")
 
     if logRealJaccardInput:
         # log real jaccard
