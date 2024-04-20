@@ -6,6 +6,19 @@ import json
 from pathlib import Path
 from pprint import pprint
 
+def additive_json_dump(data, filename):
+    data_old = []
+    try:
+        with open(filename, 'r') as f:
+            data_old = json.load(f)
+    except FileNotFoundError:
+        pass
+    
+    data_new = data_old + data
+
+    with open(filename, 'w') as f:
+        json.dump(data_new, f)
+
 
 class DBclient:
     def __init__(self, conn_str):
@@ -27,16 +40,20 @@ class DBclient:
             ".js",
             ".css",
             "wp-json/",
-            "1.0/embed"
+            "1.0/embed",
+            "/xmlrpc.php",
+            "/feed/",
+            ".css.phtml",
         ]
         self.to_sleep = 1
+        self.doc_fetch_retries = 3
     
     def connect(self):
         self.client = pymongo.MongoClient(self.conn_str)
         self.db = self.client.websecradar
         print("connected")
 
-    def getRandomHashes(self, number_of_hashes=100, filename='random_hashes.json'):
+    def getRandomHashes(self, number_of_hashes=100, log_filename='random_hashes.json'):
         print("getting random hashes")
         url_col = self.db.crawled_data_urls_v0
 
@@ -74,11 +91,10 @@ class DBclient:
                     url_hash.append({'url': url, 'hash': last_hash})
 
         print("Got {} hashes".format(len(url_hash)))
-        print ("writing url-hash pairs to '{}'".format(filename))
+        print ("writing url-hash pairs to '{}'".format(log_filename))
 
-        with open(filename, 'w') as f:
-            json.dump(url_hash, f)
-            print(" --- writing complete")
+        additive_json_dump(url_hash, log_filename)
+        print(" --- writing complete")
         
         return url_hash
  
@@ -89,11 +105,11 @@ class DBclient:
 
         # check if directory exists
         if not os.path.isdir(write_to_dir):
-            raise FilenotFoundError("Directory '{}' doesn't exist".format(write_to_dir))
+            raise FileNotFoundError("Directory '{}' doesn't exist".format(write_to_dir))
         
         # check if hash_filename exists
         if not os.path.isfile(hash_filename):
-            raise FilenotFoundError("File '{}' doesn't exist".format(hash_filename))
+            raise FileNotFoundError("File '{}' doesn't exist".format(hash_filename))
         
         
         filename_url = []
@@ -104,16 +120,31 @@ class DBclient:
             count = start_doc_name - 1
             for hash_url in data:
                 count += 1
-                print("sleeping")
-                time.sleep(self.to_sleep)
-                doc_doc = doc_col.find_one({"hash": hash_url['hash']})
+                
+                for try_n in range(self.doc_fetch_retries):
+                    print("sleeping")
+                    time.sleep(self.to_sleep)
+                    doc_doc = doc_col.find_one({"hash": hash_url['hash']})
+                    if not doc_doc:
+                        print(f"couldn't get document on try {try_n + 1}")
+                        continue
+                    else:
+                        break
+
                 if not doc_doc:
-                    print("couldn't get document")
+                    print("couldn't get document, skipping")
                     continue
+
                 doc = doc_doc['page']
 
+                # check if document is too short
                 if len(doc) < 15:
                     print("document too short")
+                    continue
+
+                # check if document is json
+                if doc.startswith("{") or doc.startswith("["):
+                    print("document is json")
                     continue
 
                 filename_without_dir = (str(count) + ".html")
@@ -137,9 +168,8 @@ class DBclient:
             if entry not in existing_result_log:
                 existing_result_log.append(entry)
         
-        with open(result_log_filename, "w") as f:
-            json.dump(existing_result_log, f)
-            print("result log written")
+        additive_json_dump(existing_result_log, result_log_filename)
+        print("result log written")
         
 def getNrandomHashes(N=100):
     config = load_dotenv('.env')

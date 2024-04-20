@@ -1,0 +1,37 @@
+[
+    
+    {
+        "1086": {
+            "hash": "7664c5f416a17859feed014c37da8152e562c29cfb822f4e683044c51aa49dc1",
+            "url": "https://tickets.sr/en-us"
+        },
+        "785": {
+            "hash": "60514b9ae680ac6bb0f40f60d61bd57fd6f9b1f51f05ad6bb8925d5cb00bed69",
+            "url": "https://tickets.co.ma/en-us"
+        },
+        "comment": "skoro identi\u010dne stranice, jedna na .sr a druga na .co.ma domeni"
+    },
+    {
+        "1335": {
+            "hash": "de944be69311994d077bb07bec6e75d93cd23ed7fbfeff4803dbc5cfa939a96c",
+            "url": "http://mail.dcnet.hr"
+        },
+        "1395": {
+            "hash": "a8cc45d89b41141ff2bb4ce4744914cf3c5a99d337117e56d8387519777d9c2d",
+            "url": "https://tenso.hr"
+        },
+        "1533": {
+            "hash": "c5c145d3a2b4c77c1480762881f5028b366fc586806b6c66e5cb0e7d7dcabb83",
+            "url": "http://www.marecont.hr"
+        },
+        "1701": {
+            "hash": "53c91d99630842f512d3ab7e2d2f5e418746510cab250bc5d06ee374ba130095",
+            "url": "https://mail.varioparts.hr"
+        },
+        "400": {
+            "hash": "8919aa604f103aecb859e6028abcbf8da097f1283f7fb52e09196e1c24f5b440",
+            "url": "http://mail.start-media.hr"
+        },
+        "comment": "stranica s \"idex of/\". Mo\u017eda default nekog web servera ili neke tvrtke koja radi web stranice? "
+    }
+]

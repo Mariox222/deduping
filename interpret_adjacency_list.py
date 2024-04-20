@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import hashlib
+from pprint import pprint
 
 def main():
     adjacency_list = None
@@ -29,8 +30,6 @@ def main():
         if len(values) == 0:
             continue
         
-        has_301 = False
-        has_bad_url = False
 
         filenames = []
         filenames.append(key)
@@ -49,20 +48,6 @@ def main():
             h.update(name_content[filename].encode())
             name_hashes[filename] = h.hexdigest()
         
-        # 301 status code check
-        names_301 = []
-        for filename in filenames:
-            # check if the third line is <title>301 Moved Permanently</title>
-            
-            try:
-                if name_content[filename].split('\n')[2] == "<title>301 Moved Permanently</title>":
-                    names_301.append(filename)
-                    has_301 = True
-            except IndexError:
-                print(f"IndexError: {filename}, probably a very short file")
-                short_files.add(filename)
-
-
         name_url = {}
         for filename in filenames:
             with open(logs_dir / "random_hashes.json", 'r') as f:
@@ -72,6 +57,65 @@ def main():
                         name_url[filename] = entry['url']
                         break
                     name_url[filename] = "url not found"
+        
+        has_bad_url = False
+
+        # bad websites filtering
+        has_30X = False
+        has_cloudflare_error = False
+        has_wix_error = False
+        has_blogspot_moved_error = False
+        names_30X = []
+        names_cloudflare_error = []
+        names_wix_error = []
+        names_blogspot_moved_error = []
+        for filename in filenames:
+            url_without_port = ""
+            if name_url[filename] != "url not found":
+                if name_url[filename].split(":")[0] == "http" or name_url[filename].split(":")[0] == "https":
+                    try:
+                        url_without_port = name_url[filename].split(":")[1][2:]
+                    except IndexError:
+                        url_without_port = name_url[filename]
+                else:
+                    url_without_port = name_url[filename]
+            
+            """ if filename == "1117":
+                print(url_without_port)
+                print(name_content[filename].split('\n')[8])
+                print(f"<title>{url_without_port} | 521: Web server is down</title>") """
+            # check if the third line is <title>301 Moved Permanently</title>
+            
+            try:
+                if name_content[filename].split('\n')[2].lower() == "<title>301 Moved Permanently</title>".lower():
+                    names_30X.append(filename)
+                    has_30X = True
+                # also check 302
+                elif name_content[filename].split('\n')[2].lower() == "<title>302 Found</title>".lower():
+                    names_30X.append(filename)
+                    has_30X = True
+                
+                # check for cloudflare error by checking if the 9th line is <title>[url without port] | 521: Web server is down</title>
+                elif name_content[filename].split('\n')[8].lower() == f"<title>{url_without_port} | 521: Web server is down</title>".lower() or \
+                     name_content[filename].split('\n')[8].lower() == f"<title>{url_without_port} | 522: Connection timed out</title>".lower():
+                    names_cloudflare_error.append(filename)
+                    has_cloudflare_error = True
+                
+                # check for wix error by checking if the 6th line is <html ng-app="wixErrorPagesApp">
+                elif name_content[filename].split('\n')[5].lower() == "<html ng-app=\"wixErrorPagesApp\">".lower():
+                    names_wix_error.append(filename)
+                    has_wix_error = True
+                
+                # check for blogspot moved by checking if the 3rd line is <TITLE>Moved Temporarily</TITLE> or <title>Moved Permanently</title>
+                elif name_content[filename].split('\n')[2].lower() == "<title>Moved Temporarily</title>".lower() or \
+                     name_content[filename].split('\n')[2].lower() == "<title>Moved Permanently</title>".lower():
+                    names_blogspot_moved_error.append(filename)
+                    has_blogspot_moved_error = True
+            except IndexError:
+                print(f"IndexError: {filename}, probably a very short file")
+                short_files.add(filename)
+
+
         
         hash_collision_percent = 0
         unique_hashes = set(name_hashes.values())
@@ -84,8 +128,16 @@ def main():
                 "hash": name_hashes[filename],
                 "url": name_url[filename],
             }
-            if filename in names_301:
-                result_d[filename]["301"] = "!!!!! 301 STATUS CODE !!!!!"
+            if name_url[filename] == "url not found":
+                has_bad_url = True
+            if filename in names_30X:
+                result_d[filename]["30X"] = "!!!!! 30X STATUS CODE !!!!!"
+            elif filename in names_cloudflare_error:
+                result_d[filename]["cloudflare_error"] = "!!!!! CLOUDFLARE ERROR !!!!!"
+            elif filename in names_wix_error:
+                result_d[filename]["wix_error"] = "!!!!! WIX ERROR !!!!!"
+            elif filename in names_blogspot_moved_error:
+                result_d[filename]["blogspot_moved_error"] = "!!!!! BLOGSPOT MOVED ERROR !!!!!"
             else:
                 pass
         
@@ -94,7 +146,8 @@ def main():
         
         final_r.append(result_d)
 
-        if hash_collision_percent == 0 and not has_301 and not has_bad_url:
+        if hash_collision_percent == 0 and not has_30X and not has_bad_url and not has_cloudflare_error \
+            and not has_wix_error and not has_blogspot_moved_error:
             good_results.append(result_d)
     
     with open(logs_dir / "interpretation_result.json", 'w') as f:
