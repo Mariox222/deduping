@@ -45,8 +45,8 @@ class DBclient:
             "/feed/",
             ".css.phtml",
         ]
-        self.to_sleep = 1
-        self.doc_fetch_retries = 3
+        self.to_sleep = 2
+        self.doc_fetch_retries = 1
     
     def connect(self):
         self.client = pymongo.MongoClient(self.conn_str)
